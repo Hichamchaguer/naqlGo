@@ -35,10 +35,10 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
-            <a href="/login">Connexion</a>
+            <Link href="/login">Connexion</Link>
           </Button>
           <Button size="sm" asChild>
-            <a href="/signup">Inscription</a>
+            <Link href="/signup">Inscription</Link>
           </Button>
         </div>
       </nav>

@@ -1,3 +1,5 @@
+"use client";
+
 // Converted from tanstack router to Next.js App Router page
 import Link from "next/link";
 import { Truck, Mail, Lock, ShieldCheck, Shield } from "lucide-react";

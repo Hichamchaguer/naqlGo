@@ -11,3 +11,6 @@ coverage
 *.suo
 *.ntvs*
 *.njsproj
+.next
+package-lock.json/
+

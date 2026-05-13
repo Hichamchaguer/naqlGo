@@ -1,4 +1,5 @@
-// Converted from tanstack router to Next.js App Router page
+"use client";
+
 import { useState } from "react";
 import {
   ShieldCheck,
