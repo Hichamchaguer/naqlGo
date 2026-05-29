@@ -18,7 +18,7 @@ export const metadata = {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">ç
+    <div className="min-h-screen bg-background">
       <Navbar />
 
       <main>

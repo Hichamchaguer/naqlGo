@@ -2,15 +2,56 @@
 
 // Converted from tanstack router to Next.js App Router page
 import Link from "next/link";
-import { Truck, Mail, Lock, ShieldCheck, Shield } from "lucide-react";
+import { Truck, Mail, Lock, ShieldCheck, Shield, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import api from "@/api/axios";
+import { AxiosError } from "axios";
 
 export default LoginPage;
 
 function LoginPage() {
+
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const handleSubmit = async (e:any) => {
+
+    e.preventDefault();
+    setIsLoading(true);
+
+    if (!e.target.email.value || !e.target.password.value) {
+      console.log("Email and password are required");
+      setIsLoading(false);
+      return;
+    }
+    try {
+
+      const response = await api.post('/login', {
+        email: e.target.email.value,
+        password: e.target.password.value,
+      });
+      console.log("Login successful:", response.data);
+      if (response.data.user.role === "client") {
+        router.push("/dashboard");
+      } else {
+        router.push("/shipments");
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.log("axios error:", error.message);
+      } else {
+        console.log("Login error:", error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
   return (
     <div className="flex min-h-screen flex-col bg-[hsl(var(--muted)/0.3)]">
       {/* Top bar */}
@@ -42,7 +83,7 @@ function LoginPage() {
 
             <form
               className="mt-8 space-y-5"
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={handleSubmit}
             >
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
@@ -83,8 +124,15 @@ function LoginPage() {
                 </a>
               </div>
 
-              <Button type="submit" size="lg" className="h-12 w-full text-base">
-                Sign In
+              <Button type="submit" size="lg" className="h-12 w-full text-base" disabled={isLoading}>
+                {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Creating Account...
+                </>
+              ) : (
+                "Connextion"
+              )}
               </Button>
             </form>
 

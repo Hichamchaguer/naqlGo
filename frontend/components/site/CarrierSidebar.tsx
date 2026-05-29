@@ -31,7 +31,7 @@ export function CarrierSidebar() {
         </Link>
       </div>
 
-      <nav className="flex-1 px-3">
+      {/* <nav className="flex-1 px-3">
         <ul className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -53,7 +53,7 @@ export function CarrierSidebar() {
             );
           })}
         </ul>
-      </nav>
+      </nav> */}
 
       <div className="m-3 flex items-center gap-3 rounded-xl border border-border bg-card p-3">
         <img
