@@ -1,4 +1,9 @@
-declare module 'class-variance-authority' {
-  export type VariantProps<T> = Record<string, any>;
-  export function cva(base?: string, options?: any): (args?: any) => string;
+declare module "class-variance-authority" {
+  export type VariantProps<T> = T extends unknown
+    ? Record<string, string | undefined>
+    : never;
+  export function cva(
+    base?: string,
+    options?: Record<string, unknown>,
+  ): (args?: Record<string, string | undefined>) => string;
 }

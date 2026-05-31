@@ -2,6 +2,8 @@
 
 // Converted from tanstack router to Next.js App Router page
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import {
   Search,
   SlidersHorizontal,
@@ -9,9 +11,6 @@ import {
   Flag,
   Truck,
   Package,
-  Snowflake,
-  Wrench,
-  BellPlus,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -30,21 +29,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-// Head meta handled inside pages via Next metadata or <Head> where needed
+function UnauthorizedView() {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center gap-2 text-center">
+      <h1 className="text-2xl font-semibold text-foreground">Accès refusé</h1>
+      <p className="text-sm text-muted-foreground">
+        Vous n&apos;êtes pas autorisé à consulter cette page.
+      </p>
+    </div>
+  );
+}
 
-type Shipment = {
-  id: string;
-  title: string;
-  ref: string;
-  tag: { label: string; tone: "standard" | "urgent" | "oversize" };
-  price: string;
-  unit: string;
-  icon: typeof Package;
-  from: { city: string; date: string };
-  to: { city: string; date: string };
-  distance: string;
-  meta: { label: string; value: string }[];
-};
+// Head meta handled inside pages via Next metadata or <Head> where needed
 
 type Offer = {
   _id?: string;
@@ -71,84 +67,6 @@ type BidPayload = {
 };
 
 
-
-const tagStyles: Record<Shipment["tag"]["tone"], string> = {
-  standard: "bg-primary-soft text-primary",
-  urgent: "bg-orange-100 text-orange-700",
-  oversize: "bg-accent text-accent-foreground",
-};
-
-function ShipmentCard({ s }: { s: Shipment }) {
-  const Icon = s.icon;
-  return (
-    <article className="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-card)]">
-      <div className="flex items-start gap-4">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground">
-          <Icon className="h-5 w-5" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h3 className="text-lg font-semibold leading-tight text-foreground">{s.title}</h3>
-              <div className="mt-1 flex flex-wrap items-center gap-2">
-                <span
-                  className={`rounded-md px-2 py-0.5 text-[10px] font-semibold tracking-wide ${tagStyles[s.tag.tone]}`}
-                >
-                  {s.tag.label}
-                </span>
-                <span className="text-xs text-muted-foreground">Ref:dd {s.ref}</span>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-xl font-bold text-primary">{s.price}</p>
-              <p className="text-xs text-muted-foreground">{s.unit}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-        <div>
-          <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
-            <MapPin className="h-4 w-4 text-primary" />
-            {s.from.city}
-          </p>
-          <p className="mt-1 pl-5 text-xs text-muted-foreground">{s.from.date}</p>
-        </div>
-        <div className="flex flex-col items-center gap-1 text-muted-foreground">
-          <Truck className="h-4 w-4" />
-          <span className="text-[10px] font-medium tracking-wide">{s.distance}</span>
-        </div>
-        <div className="text-right">
-          <p className="flex items-center justify-end gap-1.5 text-sm font-semibold text-foreground">
-            {s.to.city}
-            <Flag className="h-4 w-4 text-destructive" />
-          </p>
-          <p className="mt-1 pr-5 text-xs text-muted-foreground">{s.to.date}</p>
-        </div>
-      </div>
-
-      <div className="mt-5 flex flex-wrap items-end justify-between gap-3 border-t border-border pt-4">
-        <div className="flex gap-6">
-          {s.meta.map((m) => (
-            <div key={m.label}>
-              <p className="text-[10px] font-semibold tracking-wider text-muted-foreground">
-                {m.label}
-              </p>
-              <p className="text-sm font-semibold text-foreground">{m.value}</p>
-            </div>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            Voir détails
-          </Button>
-          <Button size="sm">Accepter</Button>
-        </div>
-      </div>
-    </article>
-  );
-}
 
 function OfferCard({ offer }: { offer: Offer }) {
   const offerId = offer._id ?? offer.id ?? "";
@@ -355,26 +273,51 @@ function OfferCard({ offer }: { offer: Offer }) {
 }
 
 function ShipmentsPage() {
+  const router = useRouter();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [isLoadingOffers, setIsLoadingOffers] = useState(true);
   const [offersError, setOffersError] = useState<string | null>(null);
+  const [accessChecked, setAccessChecked] = useState(false);
+  const [isUnauthorized, setIsUnauthorized] = useState(false);
 
   useEffect(() => {
-    const loadOffers = async () => {
+    const checkRoleAndLoadOffers = async () => {
       try {
-        const response = await api.get<Offer[]>("/offers");
-        setOffers(response.data);
+        const response = await api.get<{ role?: string }>("/user");
+        if (response.data?.role !== "transporter") {
+          setIsUnauthorized(true);
+          router.replace("/notFound");
+          return;
+        }
+
+        const offersResponse = await api.get<Offer[]>("/offers");
+        setOffers(offersResponse.data);
         setOffersError(null);
       } catch (error) {
-        console.error("Erreur lors du chargement des offres:", error);
+        console.error("Erreur lors du chargement du profil ou des offres:", error);
         setOffersError("Impossible de charger les offres pour le moment.");
+        setIsUnauthorized(true);
+        router.replace("/notFound");
       } finally {
         setIsLoadingOffers(false);
+        setAccessChecked(true);
       }
     };
 
-    loadOffers();
-  }, []);
+    checkRoleAndLoadOffers();
+  }, [router]);
+
+  if (!accessChecked) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-muted-foreground">
+        Chargement…
+      </div>
+    );
+  }
+
+  if (isUnauthorized) {
+    return <UnauthorizedView />;
+  }
 
   return (
     <div className="min-h-screen bg-surface">
@@ -387,23 +330,23 @@ function ShipmentsPage() {
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <h2 className="text-3xl font-bold tracking-tight text-foreground">
-                    Available Shipments
+                    Expéditions disponibles
                   </h2>
                   <p className="mt-1 text-muted-foreground">
-                    Real-time marketplace for new carrier opportunities.
+                    Marché en temps réel pour de nouvelles opportunités transporteur.
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="relative">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
-                      placeholder="Search route, cargo..."
+                      placeholder="Rechercher un trajet, une cargaison..."
                       className="h-10 w-64 bg-background pl-9"
                     />
                   </div>
                   <Button variant="outline" size="lg" className="h-10">
                     <SlidersHorizontal className="h-4 w-4" />
-                    Filters
+                    Filtres
                   </Button>
                 </div>
               </div>

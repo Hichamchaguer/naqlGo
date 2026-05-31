@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Package } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 const warehouseHero = "/assets/warehouse-hero.jpg";
 const avatar1 = "/assets/avatar-1.jpg";
 const avatar2 = "/assets/avatar-2.jpg";
@@ -35,12 +36,12 @@ export function Hero() {
           <div className="flex items-center gap-4 pt-4">
             <div className="flex -space-x-2">
               {[avatar1, avatar2, avatar3].map((src, i) => (
-                <img
+                <Image
                   key={i}
                   src={src}
                   alt={`Transporteur NaqlGo ${i + 1}`}
-                  width={512}
-                  height={512}
+                  width={36}
+                  height={36}
                   loading="lazy"
                   className="h-9 w-9 rounded-full border-2 border-background object-cover"
                 />
@@ -55,7 +56,7 @@ export function Hero() {
 
         <div className="relative">
           <div className="relative overflow-hidden rounded-3xl shadow-[var(--shadow-elegant)]">
-            <img
+            <Image
               src={warehouseHero}
               alt="Entrepôt logistique moderne avec rayonnages organisés"
               width={1280}

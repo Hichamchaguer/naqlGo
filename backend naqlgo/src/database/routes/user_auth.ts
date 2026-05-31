@@ -101,4 +101,34 @@ routes.get('/profile' , authMiddleware, async (req: any, res: any) => {
         }
 });
 
+routes.put('/user', authMiddleware, async (req: any, res: any) => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({ error: 'Unauthenticated' });
+        }
+
+        const updates: any = {};
+        if (typeof req.body.firstName === 'string') {
+            updates.firstName = req.body.firstName.trim();
+        }
+        if (typeof req.body.lastName === 'string') {
+            updates.lastName = req.body.lastName.trim();
+        }
+        if (typeof req.body.profilePicture === 'string') {
+            updates.profilePicture = req.body.profilePicture.trim();
+        }
+
+        const user = await User.findByIdAndUpdate(userId, updates, { new: true });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.send(user);
+    } catch (err) {
+        console.error('Error updating user:', err);
+        res.status(500).json({ error: 'Error updating user' });
+    }
+});
+
 export default routes;

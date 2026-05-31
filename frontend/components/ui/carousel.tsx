@@ -49,17 +49,36 @@ const Carousel = React.forwardRef<
     },
     plugins,
   );
-  const [canScrollPrev, setCanScrollPrev] = React.useState(false);
-  const [canScrollNext, setCanScrollNext] = React.useState(false);
+  const subscribe = React.useCallback(
+    (onStoreChange: () => void) => {
+      if (!api) {
+        return () => undefined;
+      }
 
-  const onSelect = React.useCallback((api: CarouselApi) => {
-    if (!api) {
-      return;
-    }
+      api.on("select", onStoreChange);
+      api.on("reInit", onStoreChange);
 
-    setCanScrollPrev(api.canScrollPrev());
-    setCanScrollNext(api.canScrollNext());
-  }, []);
+      return () => {
+        api.off("select", onStoreChange);
+        api.off("reInit", onStoreChange);
+      };
+    },
+    [api],
+  );
+
+  const getSnapshot = React.useCallback(
+    () => ({
+      canScrollPrev: api?.canScrollPrev() ?? false,
+      canScrollNext: api?.canScrollNext() ?? false,
+    }),
+    [api],
+  );
+
+  const { canScrollPrev, canScrollNext } = React.useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    () => ({ canScrollPrev: false, canScrollNext: false }),
+  );
 
   const scrollPrev = React.useCallback(() => {
     api?.scrollPrev();
@@ -90,19 +109,6 @@ const Carousel = React.forwardRef<
     setApi(api);
   }, [api, setApi]);
 
-  React.useEffect(() => {
-    if (!api) {
-      return;
-    }
-
-    onSelect(api);
-    api.on("reInit", onSelect);
-    api.on("select", onSelect);
-
-    return () => {
-      api?.off("select", onSelect);
-    };
-  }, [api, onSelect]);
 
   return (
     <CarouselContext.Provider

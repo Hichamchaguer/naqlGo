@@ -2,13 +2,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Truck } from "lucide-react";
 
-const links = [
-  { label: "Solutions", href: "#solutions" },
-  { label: "Clients", href: "#clients" },
-  { label: "Suivi", href: "#tracking" },
-  { label: "Support", href: "#support" },
-];
-
 export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">

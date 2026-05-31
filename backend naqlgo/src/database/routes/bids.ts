@@ -1,10 +1,12 @@
 import router, { Request, Response } from "express";
 import Bid from "../models/bid";
 import Offer from "../models/offer";
+import { authMiddleware, requireRole } from '../../authMiddleware';
 
 const routes = router.Router();
 
-routes.post("/offers/:offerId/bids", async (req: Request, res: Response) => {
+// Only transporters can create bids
+routes.post("/offers/:offerId/bids", authMiddleware, requireRole('transporter'), async (req: Request, res: Response) => {
   try {
     const offerId = Array.isArray(req.params.offerId)
       ? req.params.offerId[0]
@@ -30,7 +32,8 @@ routes.post("/offers/:offerId/bids", async (req: Request, res: Response) => {
   }
 });
 
-routes.get("/offers/:offerId/bids", async (req: Request, res: Response) => {
+// Both clients and transporters can view bids (optional: add authMiddleware if needed)
+routes.get("/offers/:offerId/bids", authMiddleware, async (req: Request, res: Response) => {
   try {
     const offerId = Array.isArray(req.params.offerId)
       ? req.params.offerId[0]
@@ -47,8 +50,11 @@ routes.get("/offers/:offerId/bids", async (req: Request, res: Response) => {
   }
 });
 
+// Only clients can accept/reject bids
 routes.patch(
   "/offers/:offerId/bids/:bidId",
+  authMiddleware,
+  requireRole('client'),
   async (req: Request, res: Response) => {
     try {
       const offerId = Array.isArray(req.params.offerId)

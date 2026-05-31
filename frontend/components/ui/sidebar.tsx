@@ -561,10 +561,17 @@ const SidebarMenuButton = React.forwardRef<
     }
 
     if (typeof tooltip === "string") {
-      tooltip = {
-        children: tooltip,
-      };
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>{button}</TooltipTrigger>
+          <TooltipContent side="right" align="center" hidden={state !== "collapsed" || isMobile}>
+            {tooltip}
+          </TooltipContent>
+        </Tooltip>
+      );
     }
+
+    const tooltipProps = (tooltip ?? {}) as React.ComponentProps<typeof TooltipContent>;
 
     return (
       <Tooltip>
@@ -573,7 +580,7 @@ const SidebarMenuButton = React.forwardRef<
           side="right"
           align="center"
           hidden={state !== "collapsed" || isMobile}
-          {...tooltip}
+          {...tooltipProps}
         />
       </Tooltip>
     );
@@ -638,10 +645,14 @@ const SidebarMenuSkeleton = React.forwardRef<
     showIcon?: boolean;
   }
 >(({ className, showIcon = false, ...props }, ref) => {
-  // Random width between 50 to 90%.
+  const id = React.useId();
   const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`;
-  }, []);
+    let hash = 0;
+    for (let i = 0; i < id.length; i += 1) {
+      hash = (hash * 31 + id.charCodeAt(i)) % 40;
+    }
+    return `${50 + hash}%`;
+  }, [id]);
 
   return (
     <div

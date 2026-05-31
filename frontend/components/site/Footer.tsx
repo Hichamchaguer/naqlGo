@@ -10,14 +10,14 @@ export function Footer() {
           </span>
           <div>
             <p className="text-sm font-semibold text-foreground">NaqlGo</p>
-            <p className="text-xs text-muted-foreground">© 2026 NaqlGo Logistics. Transport in motion.</p>
+            <p className="text-xs text-muted-foreground">© 2026 NaqlGo Logistique. Transport en mouvement.</p>
           </div>
         </div>
 
         <ul className="flex flex-wrap gap-6 text-sm text-muted-foreground">
-          <li><a href="#" className="transition-colors hover:text-primary">Privacy Policy</a></li>
-          <li><a href="#" className="transition-colors hover:text-primary">Terms of Service</a></li>
-          <li><a href="#" className="transition-colors hover:text-primary">Carrier Agreement</a></li>
+          <li><a href="#" className="transition-colors hover:text-primary">Politique de confidentialité</a></li>
+          <li><a href="#" className="transition-colors hover:text-primary">Conditions de service</a></li>
+          <li><a href="#" className="transition-colors hover:text-primary">Accord transporteur</a></li>
           <li><a href="#" className="transition-colors hover:text-primary">Contact</a></li>
         </ul>
       </div>

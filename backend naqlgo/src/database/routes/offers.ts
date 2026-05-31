@@ -1,9 +1,11 @@
 import router, { Request, Response } from "express";
 import Offer from "../models/offer";
+import { authMiddleware, requireRole } from '../../authMiddleware';
 
 const routes = router.Router();
 
-routes.post("/offers", async (req: Request, res: Response) => {
+// Only clients can create offers
+routes.post("/offers", authMiddleware, requireRole('client'), async (req: Request, res: Response) => {
   try {
     const offer = await Offer.create({
       goodsType: req.body.goodsType,
@@ -24,7 +26,8 @@ routes.post("/offers", async (req: Request, res: Response) => {
   }
 });
 
-routes.get("/offers", async (_req: Request, res: Response) => {
+// Both clients and transporters can view offers (optional: add authMiddleware if needed)
+routes.get("/offers", authMiddleware, async (_req: Request, res: Response) => {
   try {
     const offers = await Offer.find().sort({ createdAt: -1 });
     res.send(offers);

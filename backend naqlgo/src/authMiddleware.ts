@@ -1,3 +1,12 @@
+// Role-based access control middleware
+export const requireRole = (role: string) => {
+    return (req: any, res: any, next: any) => {
+        if (!req.user || req.user.role !== role) {
+            return res.status(403).json({ message: 'Forbidden: Insufficient role' });
+        }
+        next();
+    };
+};
 import jwt from "jsonwebtoken";
 
 export const authMiddleware = (req: any, res: any, next: any) => {

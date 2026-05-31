@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   ShieldCheck,
   MapPin,
@@ -67,6 +69,7 @@ type Bid = {
 type OfferWithBids = Offer & { bids: Bid[] };
 
 function DashboardPage() {
+  const router = useRouter();
   const [priority, setPriority] = useState<"standard" | "express">("standard");
   const [goodsType, setGoodsType] = useState("industrial");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,6 +78,8 @@ function DashboardPage() {
   const [offersLoading, setOffersLoading] = useState(false);
   const [offersError, setOffersError] = useState<string | null>(null);
   const [offersNotice, setOffersNotice] = useState<string | null>(null);
+  const [accessChecked, setAccessChecked] = useState(false);
+  const [isUnauthorized, setIsUnauthorized] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -171,8 +176,45 @@ function DashboardPage() {
   };
 
   useEffect(() => {
-    loadOffers();
-  }, []);
+    const checkRole = async () => {
+      try {
+        const response = await api.get<{ role?: string }>("/user");
+        if (response.data?.role !== "client") {
+          setIsUnauthorized(true);
+          router.replace("/notFound");
+          return;
+        }
+        loadOffers();
+      } catch (error) {
+        console.error("Erreur lors du chargement du profil:", error);
+        setIsUnauthorized(true);
+        router.replace("/notFound");
+      } finally {
+        setAccessChecked(true);
+      }
+    };
+
+    checkRole();
+  }, [router]);
+
+  if (!accessChecked) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-muted-foreground">
+        Chargement…
+      </div>
+    );
+  }
+
+  if (isUnauthorized) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-2 text-center">
+        <h1 className="text-2xl font-semibold text-foreground">Accès refusé</h1>
+        <p className="text-sm text-muted-foreground">
+          Vous n&apos;êtes pas autorisé à consulter cette page.
+        </p>
+      </div>
+    );
+  }
 
   const visibleOffers: OfferWithBids[] = offers.filter(
     (offer) => offer.status !== "confirmed"
@@ -551,10 +593,9 @@ function DashboardPage() {
                 <aside className="space-y-5">
                   <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
                     <div className="relative h-40 bg-muted">
-                      <img
+                      <Image
                         src={globeImg}
                         alt="Aperçu de l’itinéraire"
-                        loading="lazy"
                         width={768}
                         height={512}
                         className="h-full w-full object-cover"
@@ -625,7 +666,7 @@ function DashboardPage() {
             <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
               <p>
                 <span className="font-bold text-foreground">NaqlGo</span> · © 2024 NaqlGo
-                Logistics. Precision in Motion.
+                Logistique. La précision en mouvement.
               </p>
               <div className="flex flex-wrap gap-5">
                 <a href="#" className="hover:text-foreground">Politique de confidentialité</a>

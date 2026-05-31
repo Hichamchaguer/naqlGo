@@ -11,7 +11,7 @@ export function CTA() {
             Prêt à transformer votre logistique ?
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-primary-foreground/90">
-            Rejoignez NaqlGo aujourd'hui et profitez d'une solution de livraison moderne, sécurisée
+            Rejoignez NaqlGo aujourd&apos;hui et profitez d&apos;une solution de livraison moderne, sécurisée
             et efficace.
           </p>
           <Button variant="secondary" size="xl" className="mt-8">

@@ -2,15 +2,16 @@
 
 // Converted from tanstack router to Next.js App Router page
 import Link from "next/link";
-import { Truck, Mail, Lock, ShieldCheck, Shield, Loader2 } from "lucide-react";
+import { Truck, Mail, Lock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import api from "@/api/axios";
 import { AxiosError } from "axios";
+import { SessionRedirect } from "@/components/site/SessionRedirect";
 
 export default LoginPage;
 
@@ -18,23 +19,26 @@ function LoginPage() {
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const handleSubmit = async (e:any) => {
-
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!e.target.email.value || !e.target.password.value) {
-      console.log("Email and password are required");
+    const formData = new FormData(e.currentTarget);
+    const email = String(formData.get("email") || "").trim();
+    const password = String(formData.get("password") || "").trim();
+
+    if (!email || !password) {
+      console.log("Email et mot de passe requis");
       setIsLoading(false);
       return;
     }
     try {
 
-      const response = await api.post('/login', {
-        email: e.target.email.value,
-        password: e.target.password.value,
+      const response = await api.post("/login", {
+        email,
+        password,
       });
-      console.log("Login successful:", response.data);
+  console.log("Connexion réussie:", response.data);
       if (response.data.user.role === "client") {
         router.push("/dashboard");
       } else {
@@ -42,9 +46,9 @@ function LoginPage() {
       }
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.log("axios error:", error.message);
+        console.log("Erreur axios:", error.message);
       } else {
-        console.log("Login error:", error);
+        console.log("Erreur de connexion:", error);
       }
     } finally {
       setIsLoading(false);
@@ -54,6 +58,7 @@ function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-[hsl(var(--muted)/0.3)]">
+      <SessionRedirect />
       {/* Top bar */}
       <header className="border-b border-border/60 bg-background">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
@@ -74,10 +79,10 @@ function LoginPage() {
           <div className="rounded-2xl border border-border/60 bg-card p-10 shadow-[var(--shadow-elegant)]">
             <div className="text-center">
               <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                Welcome back
+                Bon retour
               </h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                Access your logistics dashboard
+                Accédez à votre tableau de bord logistique
               </p>
             </div>
 
@@ -86,11 +91,12 @@ function LoginPage() {
               onSubmit={handleSubmit}
             >
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
+                <Label htmlFor="email">Adresse e-mail</Label>
                 <div className="relative">
                   <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     className="h-11 pl-9"
                     autoComplete="email"
@@ -99,11 +105,12 @@ function LoginPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Mot de passe</Label>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="password"
+                    name="password"
                     type="password"
                     className="h-11 pl-9"
                     autoComplete="current-password"
@@ -114,13 +121,13 @@ function LoginPage() {
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-2 text-sm text-foreground">
                   <Checkbox id="remember" />
-                  <span>Keep me logged in</span>
+                  <span>Rester connecté</span>
                 </label>
                 <a
                   href="#forgot"
                   className="text-sm font-medium text-primary hover:underline"
                 >
-                  Forgot password?
+                  Mot de passe oublié ?
                 </a>
               </div>
 
@@ -128,18 +135,18 @@ function LoginPage() {
                 {isLoading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Creating Account...
+                  Connexion...
                 </>
               ) : (
-                "Connextion"
+                "Connexion"
               )}
               </Button>
             </form>
 
             <div className="mt-8 border-t border-border/60 pt-6 text-center text-sm text-muted-foreground">
-              Don&apos;t have an account?{" "}
+              Vous n&apos;avez pas de compte ?{" "}
               <Link href="/signup" className="font-medium text-primary hover:underline">
-                Sign Up
+                Inscrivez-vous
               </Link>
             </div>
           </div>
@@ -150,12 +157,12 @@ function LoginPage() {
       {/* Footer */}
       <footer className="border-t border-border/60 bg-background">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-5 text-xs text-muted-foreground sm:flex-row">
-          <p>© 2024 NaqlGo Logistics Technologies. All rights reserved.</p>
+          <p>© 2024 NaqlGo Technologies Logistiques. Tous droits réservés.</p>
           <div className="flex items-center gap-6">
-            <a href="#privacy" className="hover:text-primary">Privacy Policy</a>
-            <a href="#terms" className="hover:text-primary">Terms of Service</a>
-            <a href="#cookies" className="hover:text-primary">Cookie Policy</a>
-            <a href="#contact" className="hover:text-primary">Contact Support</a>
+            <a href="#privacy" className="hover:text-primary">Politique de confidentialité</a>
+            <a href="#terms" className="hover:text-primary">Conditions de service</a>
+            <a href="#cookies" className="hover:text-primary">Politique des cookies</a>
+            <a href="#contact" className="hover:text-primary">Contacter le support</a>
           </div>
         </div>
       </footer>
