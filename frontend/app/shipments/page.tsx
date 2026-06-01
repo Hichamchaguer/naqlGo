@@ -284,7 +284,8 @@ function ShipmentsPage() {
     const checkRoleAndLoadOffers = async () => {
       try {
         const response = await api.get<{ role?: string }>("/user");
-        if (response.data?.role !== "transporter") {
+        console.log("Rôle utilisateur:", response.data);
+        if (response.data?.role !== "transportor") {
           setIsUnauthorized(true);
           router.replace("/notFound");
           return;
@@ -383,7 +384,7 @@ function ShipmentsPage() {
 
 
               <div className="mt-10 flex justify-center">
-                <div className="inline-flex items-center gap-3 rounded-full bg-muted px-4 py-2 text-xs text-muted-foreground">
+                {/* <div className="inline-flex items-center gap-3 rounded-full bg-muted px-4 py-2 text-xs text-muted-foreground">
                   <button
                     type="button"
                     className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-background"
@@ -399,7 +400,7 @@ function ShipmentsPage() {
                   >
                     <ChevronRight className="h-3.5 w-3.5" />
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           </main>

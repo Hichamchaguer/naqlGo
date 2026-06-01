@@ -123,6 +123,7 @@ function DashboardPage() {
       priority,
     };
     try {
+      console.log("Demande publiée avec succès:", offer);
       await api.post("/offers", offer);
       form.reset();
       setGoodsType("industrial");

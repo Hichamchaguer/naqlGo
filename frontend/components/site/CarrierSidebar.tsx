@@ -73,7 +73,7 @@ export function CarrierSidebar() {
   }, [currentUser]);
 
   const displayRole = currentUser?.role
-    ? currentUser.role === "transporter"
+    ? currentUser.role === "transportor"
       ? "Transporteur"
       : "Client"
     : "";
@@ -121,30 +121,6 @@ export function CarrierSidebar() {
           <p className="text-sm text-muted-foreground">Gestionnaire de flotte</p>
         </Link>
       </div>
-
-      {/* <nav className="flex-1 px-3">
-        <ul className="space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = pathname === item.to;
-            return (
-              <li key={item.label}>
-                <Link
-                  href={item.to}
-                  className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-                    active
-                      ? "bg-primary-soft text-primary"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav> */}
 
       <div className="mt-auto">
         <div className="m-3 flex items-center gap-3 rounded-xl border border-border bg-card p-3">

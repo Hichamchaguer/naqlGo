@@ -26,6 +26,7 @@ function LoginPage() {
     const formData = new FormData(e.currentTarget);
     const email = String(formData.get("email") || "").trim();
     const password = String(formData.get("password") || "").trim();
+    console.log("Tentative de connexion avec:", email, password);
 
     if (!email || !password) {
       console.log("Email et mot de passe requis");
@@ -38,7 +39,7 @@ function LoginPage() {
         email,
         password,
       });
-  console.log("Connexion réussie:", response.data);
+      console.log("Connexion réussie:", response.data.user.role);
       if (response.data.user.role === "client") {
         router.push("/dashboard");
       } else {
@@ -58,7 +59,7 @@ function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-[hsl(var(--muted)/0.3)]">
-      <SessionRedirect />
+      {/* <SessionRedirect /> */}
       {/* Top bar */}
       <header className="border-b border-border/60 bg-background">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
@@ -144,7 +145,7 @@ function LoginPage() {
             </form>
 
             <div className="mt-8 border-t border-border/60 pt-6 text-center text-sm text-muted-foreground">
-              Vous n&apos;avez pas de compte ?{" "}
+              Vous navez pas de compte ?{" "}
               <Link href="/signup" className="font-medium text-primary hover:underline">
                 Inscrivez-vous
               </Link>

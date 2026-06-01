@@ -11,7 +11,6 @@ const sideImage = "/assets/signup-side.jpg";
 import api from "@/api/axios";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
-import { SessionRedirect } from "@/components/site/SessionRedirect";
 
 export default SignupPage;
 
@@ -62,7 +61,6 @@ function SignupPage() {
 };
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      <SessionRedirect />
       {/* Left brand panel */}
       <aside className="relative hidden overflow-hidden lg:block">
         <Image

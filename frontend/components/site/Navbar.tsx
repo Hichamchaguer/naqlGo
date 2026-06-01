@@ -13,18 +13,6 @@ export function Navbar() {
           <span className="text-lg font-bold tracking-tight text-foreground">NaqlGo</span>
         </Link>
 
-        {/* <ul className="hidden items-center gap-8 md:flex">
-          {links.map((l) => (
-            <li key={l.label}>
-              <a
-                href={l.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-              >
-                {l.label}
-              </a>
-            </li>
-          ))}
-        </ul> */}
 
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>

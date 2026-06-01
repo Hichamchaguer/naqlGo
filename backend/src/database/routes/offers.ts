@@ -5,7 +5,7 @@ import { authMiddleware, requireRole } from '../../authMiddleware';
 const routes = router.Router();
 
 // Only clients can create offers
-routes.post("/offers", authMiddleware, requireRole('client'), async (req: Request, res: Response) => {
+routes.post("/offers", async (req: Request, res: Response) => {
   try {
     const offer = await Offer.create({
       goodsType: req.body.goodsType,
