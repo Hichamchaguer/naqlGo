@@ -2,13 +2,6 @@
 <h3><p>Une application web pour la gestion des expéditions. Construite avec TypeScript, Docker et une architecture frontend/backend moderne.
 </p></h3>
 
-<h2>Réaliser par</h2>
-<ul>
-  <li>Chaguer Hicham</li>
-  <li>Ait bouyahya</li>
-  <li>El Aoud Youness</li>
-</ul>
-
 <h2>✨ Fonctionnalités</h2>
 
 <ul>
